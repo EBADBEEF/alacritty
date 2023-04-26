@@ -754,11 +754,12 @@ bitflags! {
         const SEARCH                 = 0b0001_0000;
         const DISAMBIGUATE_ESC_CODES = 0b0010_0000;
         const REPORT_ALL_KEYS_AS_ESC = 0b0100_0000;
+        const EMPTY_SELECTION        = 0b1000_0000;
     }
 }
 
 impl BindingMode {
-    pub fn new(mode: &TermMode, search: bool) -> BindingMode {
+    pub fn new(mode: &TermMode, search: bool, empty_selection: bool) -> BindingMode {
         let mut binding_mode = BindingMode::empty();
         binding_mode.set(BindingMode::APP_CURSOR, mode.contains(TermMode::APP_CURSOR));
         binding_mode.set(BindingMode::APP_KEYPAD, mode.contains(TermMode::APP_KEYPAD));
@@ -773,6 +774,7 @@ impl BindingMode {
             BindingMode::REPORT_ALL_KEYS_AS_ESC,
             mode.contains(TermMode::REPORT_ALL_KEYS_AS_ESC),
         );
+        binding_mode.set(BindingMode::EMPTY_SELECTION, empty_selection);
         binding_mode
     }
 }
@@ -818,6 +820,8 @@ impl<'a> Deserialize<'a> for ModeWrapper {
                         "~vi" => res.not_mode |= BindingMode::VI,
                         "search" => res.mode |= BindingMode::SEARCH,
                         "~search" => res.not_mode |= BindingMode::SEARCH,
+                        "emptyselection" => res.mode |= BindingMode::EMPTY_SELECTION,
+                        "~emptyselection" => res.not_mode |= BindingMode::EMPTY_SELECTION,
                         _ => return Err(E::invalid_value(Unexpected::Str(modifier), &self)),
                     }
                 }
