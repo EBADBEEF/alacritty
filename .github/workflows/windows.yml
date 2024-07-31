@@ -1,0 +1,13 @@
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: cargo build --release
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: alacritty.exe
+          path: ./target/release/alacritty.exe
